@@ -2,6 +2,7 @@ import { JsonPipe, NgFor } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
+import { User } from './user';
 
 @Component({
   selector: 'app-root',
@@ -17,4 +18,6 @@ export class AppComponent {
     'Frontend',
     'AI'
   ]
+
+  protected userModel = new User("fe", "efe", 123, "efk");
 }

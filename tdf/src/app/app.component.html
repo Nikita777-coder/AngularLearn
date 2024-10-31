@@ -3,22 +3,23 @@
   <form #userForm="ngForm">
 
     {{userForm.value | json}}
+    {{userModel | json}}
     <div class="form-group">
       <label>Name</label>
-      <input type="text" class="form-control" ngModel name="name">
+      <input type="text" class="form-control" [(ngModel)]="userModel.name">
     </div>
 
     <div class="form-group" >
       <label>Email</label>
-      <input type="email" class="form-control" ngModel name="email">
+      <input type="email" class="form-control" [(ngModel)]="userModel.email">
     </div>
 
     <div class="form-group"  >
       <label>Phone</label>
-      <input type="phone" class="form-control" ngModel name="phone">
+      <input type="tel" class="form-control" [(ngModel)]="userModel.phone">
     </div>
 
-    <div class="form-group" ngModel name="topic">
+    <div class="form-group" [(ngModel)]="userModel.course">
       <select class="custom-select">
         <option selected>I am interesting in</option>
         <option *ngFor="let topic of topics">{{topic}}</option>
