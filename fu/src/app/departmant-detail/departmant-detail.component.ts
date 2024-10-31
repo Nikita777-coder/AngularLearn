@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-departmant-detail',
   standalone: true,
-  imports: [],
+  imports: [RouterOutlet],
   templateUrl: './departmant-detail.component.html',
   styleUrl: './departmant-detail.component.css'
 })
@@ -39,17 +39,25 @@ export class DepartmantDetailComponent implements OnInit {
     this.id += one;
   }
 
-  private navigate() {
-    this.router.navigate(['/departmants', this.id]);
+  private navigate(args: Array<Object>) {
+    this.router.navigate(args);
   }
 
-  goPrevious(): void {
+  public goPrevious(): void {
     this.getNavigationId(true);
-    this.navigate()
+    this.navigate(['/departmants', this.id])
   }
 
-  goNext(): void {
+  public goNext(): void {
     this.getNavigationId(false);
-    this.navigate()
+    this.navigate(['/departmants', this.id])
+  }
+
+  public overview(): void {
+    this.router.navigate(['overview'], {relativeTo: this.activatedRoute});
+  }
+
+  public contact(): void {
+    this.router.navigate(['contact'], {relativeTo: this.activatedRoute});
   }
 }
