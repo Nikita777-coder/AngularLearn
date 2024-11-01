@@ -1,7 +1,7 @@
 interface IUser {
     name: string 
     email: string
-    phone: number 
+    phone: number | string
     course: string
 }
 
@@ -16,8 +16,18 @@ export class User {
     ) {
         this.name = obj?.name ? obj?.name : "";
         this.email = obj?.email ? obj?.email : "";
-        this.phone = obj?.phone ? obj?.phone : 0
+        this.phone = this.transformation(obj?.phone);
         this.course = obj?.course ? obj?.course : "";
+    }
+
+    private transformation(phone?: number | string): number {
+        let number = phone ? phone : 0;
+
+        if (typeof phone === "string") {
+            return parseInt(phone);
+        }
+
+        return Number(phone)
     }
 }
 
