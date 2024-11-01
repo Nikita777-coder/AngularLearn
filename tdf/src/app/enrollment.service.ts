@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { User } from './user';
-import { Observable, Subscription } from 'rxjs';
+import { catchError, Observable, Subscription, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +12,10 @@ export class EnrollmentService {
   constructor(private _httpClient: HttpClient) { }
 
   public enroll(user: User): Observable<any> {
-    return this._httpClient.post<any>(this._url, user)
+    return this._httpClient.post<any>(this._url, user).pipe(catchError(this.errorHandler))
+  }
+
+  private errorHandler(error: HttpErrorResponse) {
+    return throwError(() => error);
   }
 }

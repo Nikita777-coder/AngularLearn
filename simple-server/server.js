@@ -15,5 +15,5 @@ app.listen(PORT, function() {
 
 app.post('/enroll', function(request, response) {
     console.log(request.body);
-    response.status(200).send({ "message": "Data received" });
+    response.status(400).send({ "message": "Data received" });
 });

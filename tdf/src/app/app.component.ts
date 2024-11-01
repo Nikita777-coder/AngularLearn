@@ -22,12 +22,14 @@ export class AppComponent {
 
   protected userModel = new User();
 
+  protected errorServerMsg = undefined;
+
   constructor(private _enrollmentService: EnrollmentService) {}
 
   public onSubmit() {
-    this._enrollmentService.enroll(this.userModel).subscribe(
-      data => console.log(data),
-      error => console.log(error)
-    );
+    this._enrollmentService.enroll(this.userModel).subscribe({
+      error: (e) => this.errorServerMsg = e.statusText,
+      next: (data) => console.log(data)
+  });
   }
 }
