@@ -3,7 +3,12 @@
 <form [formGroup]="registrationForm">
   <div class="form-group">
     <label>Username</label>
-    <input formControlName="userName" type="text" class="form-control">
+    <input formControlName="userName" type="text" class="form-control" [class.is-invalid]="getPropertyFromForm('userName')?.invalid && getPropertyFromForm('userName')?.touched">
+    
+    <div *ngIf="getPropertyFromForm('userName')?.invalid && getPropertyFromForm('userName')?.touched">
+      <small *ngIf="getPropertyFromForm('userName')?.errors?.['required']" class="text-danger">Username is required</small>
+      <small *ngIf="getPropertyFromForm('userName')?.errors?.['minlength']" class="text-danger">Username length min is 3</small>
+    </div>
   </div>
 
   <div class="form-group">
