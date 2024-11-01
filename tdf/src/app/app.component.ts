@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { User } from './user';
+import { EnrollmentService } from './enrollment.service';
 
 @Component({
   selector: 'app-root',
@@ -20,4 +21,13 @@ export class AppComponent {
   ]
 
   protected userModel = new User();
+
+  constructor(private _enrollmentService: EnrollmentService) {}
+
+  public onSubmit() {
+    this._enrollmentService.enroll(this.userModel).subscribe(
+      data => console.log(data),
+      error => console.log(error)
+    );
+  }
 }
