@@ -21,8 +21,7 @@ export class SeasonsComponent implements OnInit {
   constructor(
     private dataLoaderService: DataLoaderService, 
     private storageService: StorageService, 
-    private router: Router, 
-    private route: ActivatedRoute) {
+    private router: Router) {
   }
 
   ngOnInit(): void {
