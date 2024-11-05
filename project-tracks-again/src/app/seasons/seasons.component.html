@@ -9,8 +9,8 @@
         <tr>
           <td *ngFor="let field of seasonTableHeaders">
             <ng-container *ngIf="field === 'trackLink'; else other_content">
-              <a [routerLink]="season[field]" routerLinkActive="active" ariaCurrentWhenActive="page">
-                {{ season[field] }}
+              <a [routerLink]="['tracks/', season.id]" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="onClickTrack(season[field], season.id)">
+                click
               </a>
             </ng-container>
             <ng-template #other_content>

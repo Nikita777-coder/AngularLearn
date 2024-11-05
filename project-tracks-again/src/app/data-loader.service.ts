@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {SeasonData, SeasonTracksData, TokenResponse} from './commons';
-import {catchError, map, Observable, of} from 'rxjs';
+import {SeasonData, SeasonTracksData, TokenResponse, TrackData} from './commons';
+import {map, Observable} from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 @Injectable({
@@ -22,18 +22,14 @@ export class DataLoaderService {
     let func = this._GET_DATA_MAP.get(key);
 
     if (key === "token") {
-      return func.call(arguments);
+      return func.call(this);
     }
 
-    if (key === "tracks") {
-      return func.call(args[0], args[1]);
-    }
-
-    return func.call(args[0]);
+    return func.apply(this, args);
   }
 
-  public getSeasonTracks(token: string, seasonTrackUrl: string): Observable<SeasonTracksData[]> {
-    return this._httpClient.get<SeasonTracksData[]>(seasonTrackUrl, {headers: this.getOptions(token)})
+  public getSeasonTracks(token: string, seasonTrackUrl: string): Observable<TrackData[]> {
+    return this._httpClient.get<SeasonTracksData>(seasonTrackUrl, {headers: this.getOptions(token)}).pipe(map(data => data.tracks))
   }
 
   public getSeasons(token: string): Observable<SeasonData[]> {
@@ -46,8 +42,8 @@ export class DataLoaderService {
     ))
   }
 
-  public getToken(): Observable<TokenResponse>{
-    return this._httpClient.get<TokenResponse>(this._TOKEN_URL)
+  public getToken(): Observable<String>{
+    return this._httpClient.get<TokenResponse>(this._TOKEN_URL).pipe(map(value => value.token))
   }
 
   private handleError(err: any) {

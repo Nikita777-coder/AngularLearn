@@ -4,4 +4,4 @@ type TrackData = {id: number, car: number, name: string, seasonId: number, path:
 type SeasonTracksData = {id: number, season: string, tracks: Array<TrackData>};
 type TokenResponse = {uid:string ,group:number,id:number,login:string,token:string,type:number,result:number,text:string}
 
-export {SeasonData, SeasonObject, SeasonTracksData, TokenResponse};
+export {SeasonData, SeasonObject, SeasonTracksData, TokenResponse, TrackData};

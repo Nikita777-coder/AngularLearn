@@ -8,14 +8,7 @@
       <ng-template pTemplate="body" let-season>
         <tr>
           <td *ngFor="let field of seasonTracksTableHeaders">
-            <ng-container *ngIf="field === 'trackLink'; else other_content">
-              <a [routerLink]="season[field]" routerLinkActive="active" ariaCurrentWhenActive="page">
-                {{ season[field] }}
-              </a>
-            </ng-container>
-            <ng-template #other_content>
-              {{ season[field] }}
-            </ng-template>
+            {{season[field]}}
           </td>
         </tr>
       </ng-template>

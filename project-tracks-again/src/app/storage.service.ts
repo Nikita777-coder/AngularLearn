@@ -8,14 +8,7 @@ export class StorageService {
 
   constructor(private dataLoader: DataLoaderService) { }
 
-  public getData(key: string, args?: Array<any>): any {
-    if (localStorage.getItem(key) === "") {
-      this.dataLoader.getData(key, args).subscribe(data => {
-        this.setValue(key, data);
-        return JSON.parse(localStorage.getItem(key));
-      })
-    }
-
+  public getData(key: string): any {
     return JSON.parse(localStorage.getItem(key));
   }
 
@@ -23,3 +16,4 @@ export class StorageService {
     localStorage.setItem(key, JSON.stringify(object));
   }
 }
+
