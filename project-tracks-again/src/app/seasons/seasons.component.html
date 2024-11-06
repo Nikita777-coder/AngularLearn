@@ -1,5 +1,5 @@
 <body>
-    <p-table [value]="seasons" [tableStyle]="{ 'min-width': '50rem' }">
+    <p-table [value]="seasons$ | async" [tableStyle]="{ 'min-width': '50rem' }">
       <ng-template pTemplate="header">
         <tr>
           <th *ngFor="let header of seasonTableHeaders">{{ header }}</th>

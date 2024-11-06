@@ -2,20 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { SeasonData } from '../commons';
 import { DataLoaderService } from '../data-loader.service';
 import { StorageService } from '../storage.service';
-import { NgForOf, NgIf } from '@angular/common';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TableModule } from "primeng/table";
+import { Observable, take, tap } from 'rxjs';
 
 @Component({
   selector: 'app-seasons',
   standalone: true,
-  imports: [TableModule, NgForOf, NgIf, RouterLink, RouterLinkActive],
+  imports: [TableModule, NgForOf, NgIf, RouterLink, RouterLinkActive, AsyncPipe],
   templateUrl: './seasons.component.html',
   styleUrl: './seasons.component.css'
 })
 export class SeasonsComponent implements OnInit {
-  protected seasons: Array<SeasonData> = [];
-
+  protected seasons$: Observable<SeasonData[]>;
   protected seasonTableHeaders;
 
   constructor(
@@ -28,9 +28,14 @@ export class SeasonsComponent implements OnInit {
     let token = this.storageService.getData("token");
 
     if (!token) {
-      this.dataLoaderService.getData("token").subscribe(token => {
-        this.storageService.setValue("token", token); 
-        console.log(token);
+      this.dataLoaderService.getData("token")
+      .pipe(
+        take(1),
+        tap(token => {
+          this.storageService.setValue("token", token); 
+          console.log(token);
+        })
+    ).subscribe(token => {
         this.fetchSeasons(token); 
       });
     } else {
@@ -39,12 +44,11 @@ export class SeasonsComponent implements OnInit {
   }
 
   private fetchSeasons(token: string) {
-      this.dataLoaderService.getData("seasons", [token]).subscribe(seasons => {
-        this.storageService.setValue("seasons", seasons); 
-        console.log(seasons);
-        this.seasons = seasons;
-        this.seasonTableHeaders = Object.keys(this.seasons.length ? this.seasons[0] : {});
-      })
+    this.seasons$ = this.dataLoaderService.getData("seasons", [token])
+    .pipe(tap(seasons => {
+      this.seasonTableHeaders = Object.keys(seasons.length ? seasons[0] : {});
+      this.storageService.setValue("seasons", seasons);
+    }))
 
     // need to get data from local storage when error occured
   }

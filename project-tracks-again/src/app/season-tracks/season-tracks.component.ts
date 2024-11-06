@@ -1,12 +1,12 @@
 import { AsyncPipe, JsonPipe, NgForOf, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
 import { TableModule } from 'primeng/table';
 import { SeasonTracksData } from '../commons';
-import { map } from 'rxjs/internal/operators/map';
 import { Observable } from 'rxjs/internal/Observable';
 import { DataLoaderService } from '../data-loader.service';
 import { StorageService } from '../storage.service';
+import { Subscription, take, tap } from 'rxjs';
 
 @Component({
   selector: 'app-season-tracks',
@@ -15,11 +15,11 @@ import { StorageService } from '../storage.service';
   templateUrl: './season-tracks.component.html',
   styleUrl: './season-tracks.component.css'
 })
-export class SeasonTracksComponent implements OnInit {
-  protected seasonTracks: SeasonTracksData[] = [];
+export class SeasonTracksComponent implements OnInit, OnDestroy {
+  protected seasonTracks$: Observable<SeasonTracksData[]>;
   protected seasonTracksTableHeaders;
   protected fullTracskUrl = "";
-  private state$: Observable<any>;
+  protected state: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -30,18 +30,21 @@ export class SeasonTracksComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.state$ = this.route.paramMap.pipe(
-      map(() => window.history.state.tracksUrl),
-    )
-
-    this.state$.subscribe(value => this.fullTracskUrl = value);
+    this.state = this.route.paramMap.pipe(
+      tap(() => this.fullTracskUrl = window.history.state.tracksUrl),
+    ).subscribe();
 
     let token = this.storageService.getData("token");
 
     if (!token) {
-      this.dataLoaderService.getData("token").subscribe(token => {
-        this.storageService.setValue("token", token); 
-        console.log(token);
+      this.dataLoaderService.getData("token")
+      .pipe(
+        take(1),
+        tap(token => {
+          this.storageService.setValue("token", token); 
+          console.log(token);
+        })
+    ).subscribe(token => {
         this.fetchSeasonTracks(token); 
       });
     } else {
@@ -50,13 +53,16 @@ export class SeasonTracksComponent implements OnInit {
   }
 
   fetchSeasonTracks(token: string) {
-    this.dataLoaderService.getData("tracks", [token, this.fullTracskUrl]).subscribe(seasons => {
-      this.storageService.setValue("tracks", seasons); 
-      console.log(seasons);
-      this.seasonTracks = seasons;
-      this.seasonTracksTableHeaders = Object.keys(this.seasonTracks.length ? this.seasonTracks[0] : {});
-    })
+    this.seasonTracks$ = this.dataLoaderService.getData("tracks", [token, this.fullTracskUrl])
+    .pipe(tap(seasonTracks => {
+      this.seasonTracksTableHeaders = Object.keys(seasonTracks.length ? seasonTracks[0] : {});
+      this.storageService.setValue("tracks", seasonTracks);
+    }))
 
   // need to get data from local storage when error occured
+  }
+
+  ngOnDestroy(): void {
+    this.state.unsubscribe();
   }
 }
