@@ -6,8 +6,6 @@ import {DataLoaderService} from './data-loader.service';
 })
 export class StorageService {
 
-  constructor(private dataLoader: DataLoaderService) { }
-
   public getData(key: string): any {
     return JSON.parse(localStorage.getItem(key));
   }
