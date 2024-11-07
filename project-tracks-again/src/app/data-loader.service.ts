@@ -40,14 +40,4 @@ export class DataLoaderService {
   public getToken(): Observable<String>{
     return this._httpClient.get<TokenResponse>(this._TOKEN_URL).pipe(map(value => value.token))
   }
-
-  private handleError(err: any) {
-    console.log(err);
-  }
-  private getOptions(token: string): HttpHeaders {
-    return new HttpHeaders({
-      'Authorization': token,
-      'Content-Type': 'application/json'
-    })
-  }
 }

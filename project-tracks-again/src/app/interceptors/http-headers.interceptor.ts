@@ -13,7 +13,9 @@ export const httpHeadersInterceptor: HttpInterceptorFn = (req, next) => {
   return commonFunctions.getToken().pipe(
     switchMap(token => {
       const authReq = req.clone({
-        headers: req.headers.set('Authorization', token)
+        headers: req.headers
+        .set('Authorization', token)
+        .set('Content-Type', 'application/json')
       });
       return next(authReq);
     })
