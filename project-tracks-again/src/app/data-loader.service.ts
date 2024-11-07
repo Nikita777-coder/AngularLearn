@@ -12,28 +12,23 @@ export class DataLoaderService {
   private _TRACK_URL = "http://192.168.10.91/PanoServer/panoramasadmin/tracks";
   private _GET_DATA_MAP = new Map<String, Function>([
     ["token", () => this.getToken()],
-    ["seasons", (token: string) => this.getSeasons(token)],
-    ["tracks", (token: string, seasonTrackUrl: string) => this.getSeasonTracks(token, seasonTrackUrl)]
+    ["seasons", () => this.getSeasons()],
+    ["tracks", (seasonTrackUrl: string) => this.getSeasonTracks(seasonTrackUrl)]
   ])
 
   constructor(private _httpClient: HttpClient) { }
 
   public getData(key: string, args?: Array<any>): Observable<any> {
     let func = this._GET_DATA_MAP.get(key);
-
-    if (key === "token") {
-      return func.call(this);
-    }
-
     return func.apply(this, args);
   }
 
-  public getSeasonTracks(token: string, seasonTrackUrl: string): Observable<TrackData[]> {
-    return this._httpClient.get<SeasonTracksData>(seasonTrackUrl, {headers: this.getOptions(token)}).pipe(map(data => data.tracks))
+  public getSeasonTracks(seasonTrackUrl: string): Observable<TrackData[]> {
+    return this._httpClient.get<SeasonTracksData>(seasonTrackUrl).pipe(map(data => data.tracks))
   }
 
-  public getSeasons(token: string): Observable<SeasonData[]> {
-    return this._httpClient.get<SeasonData[]>(this._SEASON_URL, {headers: this.getOptions(token)})
+  public getSeasons(): Observable<SeasonData[]> {
+    return this._httpClient.get<SeasonData[]>(this._SEASON_URL)
       .pipe(map(
       seasonsData => seasonsData.map((seasonData) => ({
         ...seasonData,

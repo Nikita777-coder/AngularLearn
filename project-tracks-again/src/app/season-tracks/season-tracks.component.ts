@@ -1,12 +1,12 @@
 import { AsyncPipe, JsonPipe, NgForOf, NgIf } from '@angular/common';
-import { Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
 import { TableModule } from 'primeng/table';
-import { SeasonTracksData, CommonFunctions } from '../commons';
+import { SeasonTracksData } from '../commons';
 import { Observable } from 'rxjs/internal/Observable';
 import { DataLoaderService } from '../data-loader.service';
 import { StorageService } from '../storage.service';
-import { Subject, Subscription, take, takeUntil, tap } from 'rxjs';
+import { Subscription, tap } from 'rxjs';
 
 @Component({
   selector: 'app-season-tracks',
@@ -24,8 +24,7 @@ export class SeasonTracksComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private dataLoaderService: DataLoaderService,
-    private storageService: StorageService,
-    private commonFunctions: CommonFunctions
+    private storageService: StorageService
   ) {
     
   }
@@ -35,12 +34,11 @@ export class SeasonTracksComponent implements OnInit, OnDestroy {
       tap(() => this.fullTracskUrl = window.history.state.tracksUrl),
     ).subscribe();
 
-    let token = this.commonFunctions.getToken();
-    token.subscribe(tok => this.fetchSeasonTracks(tok));
+    this.fetchSeasonTracks();
   }
 
-  fetchSeasonTracks(token: string) {
-    this.seasonTracks$ = this.dataLoaderService.getData("tracks", [token, this.fullTracskUrl])
+  fetchSeasonTracks() {
+    this.seasonTracks$ = this.dataLoaderService.getData("tracks", [this.fullTracskUrl])
     .pipe(tap(seasonTracks => {
       this.seasonTracksTableHeaders = Object.keys(seasonTracks.length ? seasonTracks[0] : {});
       this.storageService.setValue("tracks", seasonTracks);

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonFunctions, SeasonData } from '../commons';
+import { SeasonData } from '../commons';
 import { DataLoaderService } from '../data-loader.service';
 import { StorageService } from '../storage.service';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TableModule } from "primeng/table";
-import { Observable, take, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 @Component({
   selector: 'app-seasons',
@@ -21,17 +21,15 @@ export class SeasonsComponent implements OnInit {
   constructor(
     private dataLoaderService: DataLoaderService, 
     private storageService: StorageService, 
-    private router: Router,
-    private commonFunctions: CommonFunctions) {
+    private router: Router) {
   }
 
   ngOnInit(): void {
-    let token = this.commonFunctions.getToken();
-    token.subscribe(tok => this.fetchSeasons(tok));
+    this.fetchSeasons();
   }
 
-  private fetchSeasons(token: string) {
-    this.seasons$ = this.dataLoaderService.getData("seasons", [token])
+  private fetchSeasons() {
+    this.seasons$ = this.dataLoaderService.getData("seasons")
     .pipe(tap(seasons => {
       this.seasonTableHeaders = Object.keys(seasons.length ? seasons[0] : {});
       this.storageService.setValue("seasons", seasons);
