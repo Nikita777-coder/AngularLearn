@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SeasonData } from '../commons';
+import { CommonFunctions, SeasonData } from '../commons';
 import { DataLoaderService } from '../data-loader.service';
 import { StorageService } from '../storage.service';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
@@ -21,26 +21,13 @@ export class SeasonsComponent implements OnInit {
   constructor(
     private dataLoaderService: DataLoaderService, 
     private storageService: StorageService, 
-    private router: Router) {
+    private router: Router,
+    private commonFunctions: CommonFunctions) {
   }
 
   ngOnInit(): void {
-    let token = this.storageService.getData("token");
-
-    if (!token) {
-      this.dataLoaderService.getData("token")
-      .pipe(
-        take(1),
-        tap(token => {
-          this.storageService.setValue("token", token); 
-          console.log(token);
-        })
-    ).subscribe(token => {
-        this.fetchSeasons(token); 
-      });
-    } else {
-      this.fetchSeasons(token);
-    }
+    let token = this.commonFunctions.getToken();
+    token.subscribe(tok => this.fetchSeasons(tok));
   }
 
   private fetchSeasons(token: string) {

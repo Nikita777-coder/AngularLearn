@@ -1,12 +1,12 @@
 import { AsyncPipe, JsonPipe, NgForOf, NgIf } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
 import { TableModule } from 'primeng/table';
-import { SeasonTracksData } from '../commons';
+import { SeasonTracksData, CommonFunctions } from '../commons';
 import { Observable } from 'rxjs/internal/Observable';
 import { DataLoaderService } from '../data-loader.service';
 import { StorageService } from '../storage.service';
-import { Subscription, take, tap } from 'rxjs';
+import { Subject, Subscription, take, takeUntil, tap } from 'rxjs';
 
 @Component({
   selector: 'app-season-tracks',
@@ -19,12 +19,13 @@ export class SeasonTracksComponent implements OnInit, OnDestroy {
   protected seasonTracks$: Observable<SeasonTracksData[]>;
   protected seasonTracksTableHeaders;
   protected fullTracskUrl = "";
-  protected state: Subscription;
+  private state: Subscription;
 
   constructor(
     private route: ActivatedRoute,
     private dataLoaderService: DataLoaderService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private commonFunctions: CommonFunctions
   ) {
     
   }
@@ -34,22 +35,8 @@ export class SeasonTracksComponent implements OnInit, OnDestroy {
       tap(() => this.fullTracskUrl = window.history.state.tracksUrl),
     ).subscribe();
 
-    let token = this.storageService.getData("token");
-
-    if (!token) {
-      this.dataLoaderService.getData("token")
-      .pipe(
-        take(1),
-        tap(token => {
-          this.storageService.setValue("token", token); 
-          console.log(token);
-        })
-    ).subscribe(token => {
-        this.fetchSeasonTracks(token); 
-      });
-    } else {
-      this.fetchSeasonTracks(token);
-    }
+    let token = this.commonFunctions.getToken();
+    token.subscribe(tok => this.fetchSeasonTracks(tok));
   }
 
   fetchSeasonTracks(token: string) {
@@ -66,3 +53,4 @@ export class SeasonTracksComponent implements OnInit, OnDestroy {
     this.state.unsubscribe();
   }
 }
+
