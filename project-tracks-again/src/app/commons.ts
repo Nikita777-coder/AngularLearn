@@ -1,5 +1,5 @@
 import { DestroyRef, inject, Injectable} from "@angular/core";
-import { Observable, of, Subject, takeUntil, tap } from "rxjs";
+import { catchError, EMPTY, Observable, ObservableInput, of, Subject, takeUntil, tap } from "rxjs";
 import { StorageService } from "./storage.service";
 import { DataLoaderService } from "./data-loader.service";
 
@@ -39,8 +39,8 @@ export class CommonFunctions {
                 .pipe(
                     takeUntil(destroyed),
                     tap(token => {
-                    this.storageService.setValue("token", token); 
-                    console.log(token);
+                        this.storageService.setValue("token", token); 
+                        console.log(token);
                     })
                 )
         }
